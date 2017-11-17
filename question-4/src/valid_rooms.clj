@@ -24,10 +24,18 @@
         checksum (get-checksum room)]
     (println freqs)
     (println name)
-    name))
+    true))
+
+(defn seq->int [seq]
+  (Integer/parseInt (string/join seq)))
 
 (defn -main
   [& args]
   (let [file  (if (not (empty? args)) (first args) "./input.txt")
-        rooms (seq (string/split-lines (slurp file)))]
-    (seq (map valid-room? rooms))))
+        rooms (seq (string/split-lines (slurp file)))
+        valid (filter valid-room? rooms)]
+    (println
+      (->> valid
+        (map (comp seq->int get-sector))
+        (reduce +))
+    )))
