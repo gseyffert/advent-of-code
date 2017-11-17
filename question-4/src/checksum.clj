@@ -20,7 +20,7 @@
 
 (defn valid-room? [room]
   (let [name     (get-room-name room)
-        freqs    (frequencies name)
+        freqs    (sort-by second #(> %1 %2) (frequencies name))
         checksum (get-checksum room)]
     (println freqs)
     (println name)
