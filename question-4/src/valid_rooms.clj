@@ -2,6 +2,13 @@
   (:gen-class)
   (:require [clojure.string :as string]))
 
+
+(defn get-room-name [room]
+  (-> room
+    (string/split #"-")
+    (butlast)
+    (string/join)))
+
 (defn get-checksum [room]
   (second (re-find #"\[([a-zA-Z]+)\]" room)))
 
@@ -12,30 +19,61 @@
     (string/split #"\[")
     (first)))
 
-(defn get-room-name [room]
-  (-> room
-    (string/split #"-")
-    (butlast)
-    (string/join)))
+(defn increasing? [seq]
+  (apply <= seq))
 
 (defn valid-room? [room]
-  (let [name     (get-room-name room)
-        freqs    (sort-by second #(> %1 %2) (frequencies name))
-        checksum (get-checksum room)]
-    (println freqs)
-    (println name)
-    true))
+  (let [first-five (->> room
+                     (get-room-name)
+                     (frequencies)
+                     (sort-by second #(> %1 %2) )
+                     (take 5))
+        is-alpha   (->> first-five
+                     ; split by frequencies and check that each freq-group is alphabetical
+                     (partition-by second)
+                     (reduce
+                       (fn [a v] (if (increasing? (map (comp int first) v)) a (reduced false)))
+                       true))
+        checksum   (get-checksum room)]
+    (if (and (= (string/join (map first first-five)) checksum) is-alpha)
+      true
+      false)))
+
+(defn shift-word [word by]
+  (->> word
+    (map int)
+    (map #(- % 97))
+    (map #(+ % by))
+    (map #(mod % 26))
+    (map #(+ % 97))
+    (map char)
+    (string/join)))
 
 (defn seq->int [seq]
   (Integer/parseInt (string/join seq)))
 
+(defn decrypt-room [room]
+  (let [name (-> room (get-room-name) (seq))
+        by   (seq->int (get-sector room))]
+    {:original  room
+     :decrypted (shift-word name by)}))
+
+(defn sector-sum [valid-rooms]
+  (->> valid-rooms
+    (map (comp seq->int get-sector))
+    (reduce +)))
+
 (defn -main
   [& args]
-  (let [file  (if (not (empty? args)) (first args) "./input.txt")
-        rooms (seq (string/split-lines (slurp file)))
-        valid (filter valid-room? rooms)]
-    (println
-      (->> valid
-        (map (comp seq->int get-sector))
-        (reduce +))
-    )))
+  (let [file        (if (not (empty? args)) (first args) "./input.txt")
+        rooms       (seq (string/split-lines (slurp file)))
+        valid       (filter valid-room? rooms)
+        sum         (sector-sum valid)
+        pole-sector (->> valid
+                      (map decrypt-room)
+                      (filter #(re-find #".*northpoleobjects.*" (:decrypted %)))
+                      (first)
+                      (:original)
+                      (get-sector))]
+    (println "Sum of sector IDs: " sum)
+    (println "North Pole objects sector: " pole-sector)))
