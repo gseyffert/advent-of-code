@@ -1,4 +1,4 @@
-(ns checksum
+(ns valid-rooms
   (:gen-class)
   (:require [clojure.string :as string]))
 
