@@ -39,16 +39,20 @@
 (defn build-transition [commands [_, from, give-low-to, give-high-to]]
   (assoc commands from [give-low-to, give-high-to]))
 
+; Add current bot to set of bots that have executes
 (defn update-executed [bot state]
   (assoc state :executed (conj (:executed state) bot)))
 
+; Remove just-executed transition from transitions set
 (defn update-transitions [bot state]
   (assoc state :transitions (dissoc (:transitions state) bot)))
 
+; Give a bot a chip
 (defn update-bot-val [bot val state]
   (let [bot-state (bot state)]
     (if bot-state (sort-by identity < (conj bot-state val)) [val])))
 
+; Pass chips from bot to low/high bots
 (defn update-state [bot state]
   (let [command   (get (:transitions state) bot)
         low-bot   (first command)
@@ -113,9 +117,3 @@
       (take-while #(not (nil? %)))
       (last)
       (get-answers))))
-
-; (defn -main
-;   [& args]
-;   (let [file         (if (not (empty? args)) (first args) "./resources/input.txt")
-;         instructions (string/split-lines (string/trim (slurp file)))]
-;     (println (solve-question instructions))))

@@ -2,19 +2,17 @@
   (:gen-class)
   (:require [clojure.string :as string]))
 
-(def rotate {
-    :N { "R" :E "L" :W }
-    :E { "R" :S "L" :N }
-    :S { "R" :W "L" :E }
-    :W { "R" :N "L" :S }
-  })
+(def rotate
+  {:N { "R" :E "L" :W }
+   :E { "R" :S "L" :N }
+   :S { "R" :W "L" :E }
+   :W { "R" :N "L" :S }})
 
-(def magnitudes {
-    :N [ 1, 0 ]
-    :E [ 0, 1 ]
-    :S [ -1, 0 ]
-    :W [ 0, -1 ]
-  })
+(def magnitudes
+  {:N [ 1, 0 ]
+   :E [ 0, 1 ]
+   :S [ -1, 0 ]
+   :W [ 0, -1 ]})
 
 (defn abs [number]
   (if (neg? number) (-' number) number))

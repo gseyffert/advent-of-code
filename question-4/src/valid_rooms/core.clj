@@ -18,8 +18,7 @@
     (string/split #"\[")
     (first)))
 
-(defn increasing? [seq]
-  (apply <= seq))
+(defn increasing? [seq] (apply <= seq))
 
 (defn valid-room? [room]
   (let [first-five (->> room
@@ -34,9 +33,7 @@
                        (fn [a v] (if (increasing? (map (comp int first) v)) a (reduced false)))
                        true))
         checksum   (get-checksum room)]
-    (if (and (= (string/join (map first first-five)) checksum) is-alpha)
-      true
-      false)))
+    (and (= (string/join (map first first-five)) checksum) is-alpha)))
 
 (defn shift-word [word by]
   (->> word
