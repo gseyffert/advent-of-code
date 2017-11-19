@@ -1,4 +1,4 @@
-(ns bots.core
+(ns bots
   (:gen-class)
   (:require
     [clojure.string :as string]
