@@ -63,17 +63,21 @@
     (map (comp seq->int get-sector))
     (reduce +)))
 
+(defn find-pole-sector [valid-rooms]
+  (->> valid-rooms
+    (map decrypt-room)
+    (filter #(re-find #".*northpoleobjects.*" (:decrypted %)))
+    (first)
+    (:original)
+    (get-sector)))
+
+(defn solve-question [rooms]
+  (let [valid (filter valid-room? rooms)]
+    {:part1 (sector-sum valid)
+     :part2 (find-pole-sector valid)}))
+
 (defn -main
   [& args]
   (let [file        (if (not (empty? args)) (first args) "./input.txt")
-        rooms       (seq (string/split-lines (slurp file)))
-        valid       (filter valid-room? rooms)
-        sum         (sector-sum valid)
-        pole-sector (->> valid
-                      (map decrypt-room)
-                      (filter #(re-find #".*northpoleobjects.*" (:decrypted %)))
-                      (first)
-                      (:original)
-                      (get-sector))]
-    (println "Sum of sector IDs: " sum)
-    (println "North Pole objects sector: " pole-sector)))
+        rooms       (seq (string/split-lines (slurp file)))]
+    (println (solve-question rooms))))

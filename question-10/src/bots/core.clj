@@ -90,17 +90,15 @@
 
 ; Pretty-print answers
 (defn get-answers [state]
-  ["Number of the bot: " (find-bot state)
-   "\nMultiplied outputs: " (find-output state)])
+  {:part-1 (find-bot state)
+   :part-2 (find-output state)})
 
-(defn -main
-  [& args]
-  (let [file         (if (not (empty? args)) (first args) "./resources/input.txt")
-        instructions (map parse-instruction (string/split-lines (string/trim (slurp file))))
-        start-state  (->> instructions
+(defn solve-question [instructions]
+  (let [parsed       (map parse-instruction instructions)
+        start-state  (->> parsed
                        (filter #(= :give (first %)))
                        (reduce initialize-bot {}))
-        transitions  (->> instructions
+        transitions  (->> parsed
                        (filter #(= :from (first %)))
                        (reduce build-transition {}))
         first-bot    (->> start-state
@@ -114,6 +112,10 @@
                                    :executed     #{}})
       (take-while #(not (nil? %)))
       (last)
-      (get-answers)
-      (apply str)
-      (println))))
+      (get-answers))))
+
+(defn -main
+  [& args]
+  (let [file         (if (not (empty? args)) (first args) "./resources/input.txt")
+        instructions (string/split-lines (string/trim (slurp file)))]
+    (println (solve-question instructions))))
