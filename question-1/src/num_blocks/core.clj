@@ -1,5 +1,6 @@
-(ns num-blocks
-  (:gen-class))
+(ns num-blocks.core
+  (:gen-class)
+  (:require [clojure.string :as string]))
 
 (def rotate {
     :N { "R" :E "L" :W }
@@ -30,7 +31,7 @@
      :coords     (last all-coords)}))
 
 (defn seq->int [seq]
-  (Integer/parseInt (clojure.string/join seq)))
+  (Integer/parseInt (string/join seq)))
 
 (defn find-first [f coll]
   (first (filter f coll)))
@@ -50,10 +51,3 @@
         first-multi (find-first (partial contains? multi-visit) visited)]
      {:part-1 (abs-sum (:coords (last steps)))
       :part-2 (abs-sum first-multi)}))
-
-(defn -main
-  ""
-  [& args]
-  (let [file    (if (not (empty? args)) (first args) "./input.txt")
-        cmd-str (seq (clojure.string/split (slurp file) #", "))]
-    (println (solve-question cmd-str))))

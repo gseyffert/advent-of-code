@@ -1,7 +1,6 @@
-(ns valid-rooms
+(ns valid-rooms.core
   (:gen-class)
   (:require [clojure.string :as string]))
-
 
 (defn get-room-name [room]
   (-> room
@@ -73,11 +72,5 @@
 
 (defn solve-question [rooms]
   (let [valid (filter valid-room? rooms)]
-    {:part1 (sector-sum valid)
-     :part2 (find-pole-sector valid)}))
-
-(defn -main
-  [& args]
-  (let [file        (if (not (empty? args)) (first args) "./input.txt")
-        rooms       (seq (string/split-lines (slurp file)))]
-    (println (solve-question rooms))))
+    {:part-1 (sector-sum valid)
+     :part-2 (find-pole-sector valid)}))

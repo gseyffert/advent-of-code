@@ -1,4 +1,4 @@
-(ns bots
+(ns bots.core
   (:gen-class)
   (:require
     [clojure.string :as string]
@@ -114,8 +114,8 @@
       (last)
       (get-answers))))
 
-(defn -main
-  [& args]
-  (let [file         (if (not (empty? args)) (first args) "./resources/input.txt")
-        instructions (string/split-lines (string/trim (slurp file)))]
-    (println (solve-question instructions))))
+; (defn -main
+;   [& args]
+;   (let [file         (if (not (empty? args)) (first args) "./resources/input.txt")
+;         instructions (string/split-lines (string/trim (slurp file)))]
+;     (println (solve-question instructions))))
