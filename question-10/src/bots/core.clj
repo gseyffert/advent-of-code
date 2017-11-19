@@ -5,26 +5,24 @@
     [clojure.java.io :as io]
     [clojure.set :as set]))
 
-(def bot-mappings {})
+(defn make-keyword [& strs] (keyword (apply str strs)))
 
-(defn make-keyword [& strs]
-  (keyword (apply str strs)))
+(defn make-bot-key [num] (make-keyword "bot" num))
 
-(defn make-bot-key [num]
-  (make-keyword "bot" num))
+(defn get-nums [string] (re-seq #"\d+" string))
 
-(defn get-nums [string]
-  (re-seq #"\d+" string))
-
+; [:give :bot (value)]
 (defn parse-initial-value [[value bot-num]]
   [:give (make-bot-key bot-num) (Integer/parseInt value 10)])
 
+; [:from :bot :(low-bot) :(high-bot)]
 (defn parse-give-to [[from-bot low high] [_ give-low-to give-high-to]]
   [:from
    (make-bot-key from-bot)
    (make-keyword give-low-to low)
    (make-keyword give-high-to high)])
 
+; If 2 numbers, it's an initialization command, otherwise it's a transition
 (defn parse-instruction [instruction]
   (let [nums (get-nums instruction)]
     (if (= 2 (count nums))
@@ -45,13 +43,11 @@
   (assoc state :executed (conj (:executed state) bot)))
 
 (defn update-transitions [bot state]
-  (let [new-transitions (dissoc (:transitions state) bot)]
-    (assoc state :transitions new-transitions)))
+  (assoc state :transitions (dissoc (:transitions state) bot)))
 
 (defn update-bot-val [bot val state]
-  (if (get state bot)
-    (sort-by identity < (conj (get state bot) val))
-    [val]))
+  (let [bot-state (bot state)]
+    (if bot-state (sort-by identity < (conj bot-state val)) [val])))
 
 (defn update-state [bot state]
   (let [command   (get (:transitions state) bot)
@@ -80,6 +76,7 @@
       (update-transitions current)
       (find-next))))
 
+; Find the bot the question is asking for
 (defn find-bot [state]
   (->> (:bot-states state)
     (filter #(= (second %) [17 61]))
@@ -91,6 +88,7 @@
   (apply * (map (comp first second)
                 (select-keys (:bot-states state) [:output0 :output1 :output2]))))
 
+; Pretty-print answers
 (defn get-answers [state]
   ["Number of the bot: " (find-bot state)
    "\nMultiplied outputs: " (find-output state)])
@@ -99,17 +97,16 @@
   [& args]
   (let [file         (if (not (empty? args)) (first args) "./resources/input.txt")
         instructions (map parse-instruction (string/split-lines (string/trim (slurp file))))
-        initial      (filter #(= :give (first %)) instructions)
+        start-state  (->> instructions
+                       (filter #(= :give (first %)))
+                       (reduce initialize-bot {}))
         transitions  (->> instructions
                        (filter #(= :from (first %)))
                        (reduce build-transition {}))
-        start-state  (reduce initialize-bot {} initial)
         first-bot    (->> start-state
                        (seq)
                        (filter #(>= (count (second %)) 2))
-                       (first)
-                       (first))
-       ]
+                       ((comp first first)))]
     (->>
       (iterate execute-transition {:bot-states   start-state
                                    :current      first-bot
