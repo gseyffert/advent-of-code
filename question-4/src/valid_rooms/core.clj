@@ -71,3 +71,4 @@
   (let [valid (filter valid-room? rooms)]
     {:part-1 (sector-sum valid)
      :part-2 (find-pole-sector valid)}))
+
