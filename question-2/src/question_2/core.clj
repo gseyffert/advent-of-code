@@ -2,16 +2,32 @@
   (:gen-class)
   (:require [clojure.string :as string]))
 
-(def keypad {
-  1 {:left 1 :right 2 :up 1 :down 4}
-  2 {:left 1 :right 3 :up 2 :down 5}
-  3 {:left 2 :right 3 :up 3 :down 6}
-  4 {:left 4 :right 5 :up 1 :down 7}
+(def first-keypad {
+  1 {:right 2 :down 4}
+  2 {:left 1 :right 3 :down 5}
+  3 {:left 2 :down 6}
+  4 {:right 5 :up 1 :down 7}
   5 {:left 4 :right 6 :up 2 :down 8}
-  6 {:left 5 :right 6 :up 3 :down 9}
-  7 {:left 7 :right 8 :up 4 :down 7}
-  8 {:left 7 :right 9 :up 5 :down 8}
-  9 {:left 8 :right 9 :up 6 :down 9}
+  6 {:left 5 :up 3 :down 9}
+  7 {:right 8 :up 4}
+  8 {:left 7 :right 9 :up 5}
+  9 {:left 8 :up 6}
+})
+
+(def second-keypad {
+  1  {:down 3}
+  2  {:right 3 :down 6}
+  3  {:left 2 :right 4 :up 1 :down 7}
+  4  {:left 3 :down 8}
+  5  {:right 6}
+  6  {:left 5 :right 7 :up 2 :down \A}
+  7  {:left 6 :right 8 :up 3 :down \B }
+  8  {:left 7 :right 9 :up 4 :down \C}
+  9  {:left 8}
+  \A {:right \B :up 6}
+  \B {:left \A :right \C :up 7 :down \D}
+  \C {:left \B :up 8}
+  \D {:up \B}
 })
 
 (def directions->keywords {
@@ -21,21 +37,18 @@
   \D :down
 })
 
-(defn direction->keypad [from direction]
-  (get-in keypad [from direction]))
-
-(defn direction->keyword [direction]
-  (get directions->keywords direction))
+(defn direction->keypad [pad from direction]
+  (let [new-location (get-in pad [from direction])]
+    (if (nil? new-location) from new-location)))
 
 (defn parse-instruction [directions]
-  (map direction->keyword directions))
+  (map #(get directions->keywords %) directions))
 
-(defn execute-instruction [directions]
+(defn execute-instruction [keypad directions]
   (->> directions
     (parse-instruction)
-    (reduce direction->keypad 5)))
+    (reduce (partial direction->keypad keypad) 5)))
 
 (defn solve-question [instructions]
-  (->> instructions
-    (map execute-instruction)
-    (string/join)))
+  {:part-1 (->> instructions (map #(execute-instruction first-keypad %)) (string/join))
+   :part-2 (->> instructions (map #(execute-instruction second-keypad %)) (string/join))})
