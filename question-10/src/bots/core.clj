@@ -117,3 +117,5 @@
       (take-while #(not (nil? %)))
       (last)
       (get-answers))))
+
+(defn some-fn [& args])
