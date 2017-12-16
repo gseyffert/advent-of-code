@@ -1,36 +1,9 @@
-# num-blocks
+My answer to Question 1 from Advent of Code, 2016
 
-FIXME: description
+To run the answer with the input I was given -
+```
+chmod +x run.sh
+./run.sh
+```
 
-## Installation
-
-Download from http://example.com/FIXME.
-
-## Usage
-
-FIXME: explanation
-
-    $ java -jar num-blocks-0.1.0-standalone.jar [args]
-
-## Options
-
-FIXME: listing of options this app accepts.
-
-## Examples
-
-...
-
-### Bugs
-
-...
-
-### Any Other Sections
-### That You Think
-### Might be Useful
-
-## License
-
-Copyright © 2017 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+If you have Leiningen installed, you can also `lein run` and `lein test` to run tests.

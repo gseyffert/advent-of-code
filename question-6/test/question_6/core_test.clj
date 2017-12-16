@@ -1,6 +1,6 @@
-(ns checksum.core-test
+(ns question-6.core-test
   (:require [clojure.test :refer :all]
-            [checksum :refer :all]))
+            [question-6.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."
