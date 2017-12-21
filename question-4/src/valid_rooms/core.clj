@@ -24,7 +24,7 @@
   (let [first-five (->> room
                      (get-room-name)
                      (frequencies)
-                     (sort-by second #(> %1 %2) )
+                     (sort-by second #(> %1 %2))
                      (take 5))
         is-alpha   (->> first-five
                      ; split by frequencies and check that each freq-group is alphabetical
