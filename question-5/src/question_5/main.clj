@@ -4,8 +4,6 @@
             [question-5.core :refer [solve-question]]))
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
-  (let [file (if (not (empty? args)) (first args) "./resources/input.txt")
-        code (string/trim (slurp file))]
+  (let [code (if (not (empty? args)) (first args) "cxdnnyjw")]
     (println (time (solve-question code)))))

@@ -39,8 +39,7 @@
               [])
     (apply concat)
     (partition (count (first vector)))
-    (map vec)
-    (vec)))
+    (mapv vec)))
 
 (defn solve-question [triangles]
   (let [parsed        (mapv parse-triangle triangles)
