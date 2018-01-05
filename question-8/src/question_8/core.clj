@@ -1,5 +1,3 @@
-; not 95
-
 (ns question-8.core
   (:gen-class)
   (require [clojure.string :as string]
@@ -7,36 +5,37 @@
 
 (def screen-y 6)
 (def screen-x 50)
-; (def initial-screen (vec (make-array Character/TYPE screen-y screen-x)))
 (def initial-screen (mapv #(mapv (fn [_] ".") %) (repeat screen-y (char-array screen-x))))
 
 (defn rotate-vec [vector by]
+  "Rotates given vector to the right by some integer"
   (->> (split-at (- (count vector) by) vector)
     rseq
     r/flatten
     (into [])))
 
 (defn rotate-row [screen row by]
+  "Rotates *row* in *screen* to the right *by* a given number of pixels"
   (assoc screen row (rotate-vec (get screen row) by)))
 
 (defn get-column-or-row-number [instruction-part]
   (Integer/parseInt (last (string/split instruction-part #"="))))
 
 (defn rotate-column [screen column by]
-  ; (vec
+  "Rotates *column* in *screen* down *by* a given number of pixels"
   (map-indexed
     (fn [idx row]
       (let [from (mod (- idx by) screen-y)]
         (assoc (vec row) column (get (get screen from) column))))
     screen))
-      ; )
 
 (defn illuminate-rect [screen [x y]]
+  ; Paints a block of x by y pixels in the top left-hand corner of the screen
   (let [partial-row (repeat x "#")]
     (reduce-kv (fn [current-screen idx row]
-                  (if (< idx y)
-                    (assoc current-screen idx (into [] (r/flatten [partial-row (drop x row)])))
-                    (reduced current-screen)))
+                (if (< idx y)
+                  (assoc current-screen idx (into [] (r/flatten [partial-row (drop x row)])))
+                  (reduced current-screen)))
                 screen
                 screen)))
 
